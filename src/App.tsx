@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import React, { useEffect, useState } from 'react';
 import { Dashboard } from './components/Dashboard';
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
 
 import GlobalStyle from './styles/global';
 
 export const App: React.FC = () => {
   const [isPageVisible, setIsPageVisible] = useState(true);
+  const [isFeedKilled, setIsFeedKilled] = useState(false);
 
   // Page Visibility detection
   useEffect(() => {
@@ -59,7 +62,14 @@ export const App: React.FC = () => {
         <>
           <GlobalStyle />
 
-          <Dashboard isFeedKilled={!isPageVisible} />
+          <Header />
+
+          <Dashboard isFeedKilled={!isPageVisible || isFeedKilled} />
+
+          <Footer
+            isFeedKilled={isFeedKilled}
+            setIsFeedKilled={setIsFeedKilled}
+          />
         </>
       )}
     </div>
