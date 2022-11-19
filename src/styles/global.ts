@@ -1,4 +1,7 @@
 import { createGlobalStyle } from 'styled-components';
+import 'primereact/resources/themes/bootstrap4-dark-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
 
 export default createGlobalStyle`
   * {
@@ -8,8 +11,6 @@ export default createGlobalStyle`
     outline: 0;
   }
   body {
-    background: #312E38;
-    color: #fff;
     -webkit-font-smoothing: antialiased;
   }
   body, input, button {

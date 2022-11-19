@@ -1,6 +1,5 @@
 import React from 'react';
-
-import { Container } from './styles';
+import { Container, CustomButtom } from './styles';
 
 interface FooterProps {
   isFeedKilled: boolean;
@@ -15,9 +14,11 @@ export const Footer: React.FC<FooterProps> = ({
 
   return (
     <Container>
-      <button type="button" onClick={handleOnClick}>
-        {isFeedKilled ? 'Connect' : 'Disconnect'}
-      </button>
+      <CustomButtom
+        label={isFeedKilled ? 'Connect' : 'Disconnect'}
+        onClick={handleOnClick}
+        className="p-button-primary p-button-raised p-button-rounded"
+      />
     </Container>
   );
 };

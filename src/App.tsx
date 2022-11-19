@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import React, { useEffect, useState } from 'react';
 import { Dashboard } from './components/Dashboard';
-import { Header } from './components/Header';
 import { Footer } from './components/Footer';
-
+import { Header } from './components/Header';
 import GlobalStyle from './styles/global';
 
 export const App: React.FC = () => {
@@ -43,8 +42,8 @@ export const App: React.FC = () => {
 
     // Warn if the browser doesn't support addEventListener or the Page Visibility API
     if (typeof document.addEventListener === 'undefined' || hidden === '') {
-      console.log(
-        'This demo requires a browser, such as Google Chrome or Firefox, that supports the Page Visibility API.',
+      console.warn(
+        'This App requires a browser, such as Google Chrome or Firefox, that supports the Page Visibility API.',
       );
     } else {
       // Handle page visibility change

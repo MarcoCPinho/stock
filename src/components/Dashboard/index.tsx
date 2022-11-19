@@ -1,27 +1,20 @@
 /* eslint-disable no-console */
+import { Column } from 'primereact/column';
+import { DataTable } from 'primereact/datatable';
+import { load } from 'protobufjs';
 import React, { useCallback, useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
-import { load } from 'protobufjs';
-import { Container } from './styles';
-import { base64ToArrayBuffer, formatNumber } from '../../utils';
 import { STOCKS } from '../../constants';
+import { IPricingData } from '../../interfaces';
+import { base64ToArrayBuffer } from '../../utils';
+import { Container } from './styles';
+import { formatObjectSearch } from './utils';
 
-const WSS_FEED_URL = 'wss://streamer.finance.yahoo.com/';
-
-interface IDashboard {
+export interface IDashboard {
   isFeedKilled: boolean;
 }
 
-interface IPricingData {
-  [k: string]: any;
-  change?: number;
-  changePercent?: number;
-  dayVolume?: number;
-  currency?: string;
-  id?: string;
-  price?: number;
-  time?: number;
-}
+const WSS_FEED_URL = 'wss://streamer.finance.yahoo.com/';
 
 export const Dashboard: React.FC<IDashboard> = ({ isFeedKilled }) => {
   const [tableData, setTableData] = useState<IPricingData[]>([]);
@@ -57,7 +50,10 @@ export const Dashboard: React.FC<IDashboard> = ({ isFeedKilled }) => {
         if (err) throw err;
         const pricingMessage = root?.lookupTypeOrEnum('PricingData');
         const stockData = pricingMessage?.decode(
-          base64ToArrayBuffer(event.data),
+          base64ToArrayBuffer(
+            event.data,
+            // 'CgRBTVpOFUgN3EQY4KP2/99bKgNOTVMwCDgBRSBhnjtInq5+ZQBArj3YAQQ=',
+          ),
         );
         if (stockData) {
           const parsedStock = stockData?.toJSON();
@@ -74,6 +70,8 @@ export const Dashboard: React.FC<IDashboard> = ({ isFeedKilled }) => {
         subscribe: STOCKS,
       };
       sendMessage(JSON.stringify(subscribeMessage));
+
+      // processMessages({ data: 'asd' });
     };
 
     if (isFeedKilled) {
@@ -83,39 +81,16 @@ export const Dashboard: React.FC<IDashboard> = ({ isFeedKilled }) => {
     }
   }, [getWebSocket, isFeedKilled, processMessages, sendMessage]);
 
-  console.log(tableData);
-
   return (
     <Container>
-      <table cellSpacing={15}>
-        <th>
-          Live Table
-          <tr>
-            <td>Exchange</td>
-            <td>Price</td>
-            <td>Change</td>
-            <td>% Change</td>
-            <td>Volume</td>
-            <td>Timestamp</td>
-          </tr>
-          {tableData.map(stock => {
-            return (
-              <tr style={{ border: '1px solid white' }}>
-                <td>{stock.id}</td>
-                <td>
-                  {formatNumber(2, 'currency', stock?.price, stock?.currency)}
-                </td>
-                <td>{stock.change}</td>
-                <td>{formatNumber(4, 'percent', stock.changePercent)}</td>
-                <td>{stock.dayVolume}</td>
-                <td>
-                  {new Date(new Date().setTime(stock.time!)).toUTCString()}
-                </td>
-              </tr>
-            );
-          })}
-        </th>
-      </table>
+      <DataTable value={formatObjectSearch(tableData)}>
+        <Column field="id" header="Exchange" />
+        <Column field="price" header="Price" />
+        <Column field="change" header="Change" />
+        <Column field="changePercent" header="% Change" />
+        <Column field="dayVolume" header="Volume" />
+        <Column field="time" header="Timestamp" />
+      </DataTable>
     </Container>
   );
 };
