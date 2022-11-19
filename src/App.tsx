@@ -1,26 +1,67 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+import React, { useEffect, useState } from 'react';
+import { Dashboard } from './components/Dashboard';
 
-function App() {
+import GlobalStyle from './styles/global';
+
+export const App: React.FC = () => {
+  const [isPageVisible, setIsPageVisible] = useState(true);
+
+  // Page Visibility detection
+  useEffect(() => {
+    // Set the name of the hidden property and the change event for visibility
+    let hidden = '';
+    let visibilityChange = '';
+
+    if (typeof document.hidden !== 'undefined') {
+      // Opera 12.10 and Firefox 18 and later support
+      hidden = 'hidden';
+      visibilityChange = 'visibilitychange';
+      // @ts-ignore
+    } else if (typeof document.msHidden !== 'undefined') {
+      hidden = 'msHidden';
+      visibilityChange = 'msvisibilitychange';
+      // @ts-ignore
+    } else if (typeof document.webkitHidden !== 'undefined') {
+      hidden = 'webkitHidden';
+      visibilityChange = 'webkitvisibilitychange';
+    }
+
+    const handleVisibilityChange = (): void => {
+      const isHidden = document.hidden;
+      if (isHidden) {
+        document.title = 'StockApp Paused';
+        setIsPageVisible(false);
+      } else {
+        document.title = 'StockApp';
+        setIsPageVisible(true);
+      }
+    };
+
+    // Warn if the browser doesn't support addEventListener or the Page Visibility API
+    if (typeof document.addEventListener === 'undefined' || hidden === '') {
+      console.log(
+        'This demo requires a browser, such as Google Chrome or Firefox, that supports the Page Visibility API.',
+      );
+    } else {
+      // Handle page visibility change
+      document.addEventListener(
+        visibilityChange,
+        handleVisibilityChange,
+        false,
+      );
+    }
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {isPageVisible && (
+        <>
+          <GlobalStyle />
+
+          <Dashboard isFeedKilled={!isPageVisible} />
+        </>
+      )}
     </div>
   );
-}
-
-export default App;
+};
