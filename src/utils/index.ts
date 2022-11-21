@@ -15,8 +15,8 @@ const formatNumber = (
   style?: string,
 ): string => {
   const options = { maximumFractionDigits, style, currency };
-  if (style) Object.assign(options, { style });
   if (currency) Object.assign(options, { currency });
+  if (style) Object.assign(options, { style });
   return value ? Intl.NumberFormat('us', options).format(value) : '';
 };
 

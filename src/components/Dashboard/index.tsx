@@ -26,7 +26,7 @@ export const Dashboard: React.FC<IDashboard> = ({ isFeedKilled }) => {
   });
 
   const processStock = useCallback(
-    (stockData: IPricingData | undefined): void => {
+    (stockData: IPricingData): void => {
       if (stockData) {
         console.log('stockData', stockData);
 

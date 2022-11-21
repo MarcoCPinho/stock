@@ -7,9 +7,9 @@ export const formatObjectSearch = (data: IPricingData[]): Object[] => {
   if (data) {
     const formatedContent = data.map((obj: IPricingData) => ({
       id: obj.id,
-      price: formatNumber(2, obj.price!, 'USD', 'currency'),
-      change: formatNumber(2, obj.change!, 'USD', 'currency'),
-      changePercent: `${formatNumber(2, obj.changePercent!, 'USD')}%`,
+      price: formatNumber(2, obj.price, 'USD', 'currency'),
+      change: formatNumber(2, obj.change, 'USD', 'currency'),
+      changePercent: `${formatNumber(2, obj.changePercent, 'USD')}%`,
       dayVolume: formatNumber(0, obj.dayVolume, 'USD'),
       time: new Date(new Date().setTime(obj.time!)).toLocaleString(),
       obj: { ...obj },
