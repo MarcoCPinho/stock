@@ -15,7 +15,7 @@ const formatNumber = (
   currency = 'USD',
 ): string => {
   const options = { maximumFractionDigits, style, currency };
-  return value ? Intl.NumberFormat('pt-br', options).format(value) : '';
+  return value ? Intl.NumberFormat('us', options).format(value) : '';
 };
 
 export { base64ToArrayBuffer, formatNumber };
