@@ -28,32 +28,32 @@ export const Dashboard: React.FC<IDashboard> = ({ isFeedKilled }) => {
   const processStock = useCallback(
     (stockData: IPricingData | undefined): void => {
       if (stockData) {
-        setTableData(prevState =>
-          prevState.length
-            ? // update data
-              prevState.map(stock =>
-                stock.id === stockData.id ? stockData : stock,
-              )
-            : // create data
-              [...prevState, { ...stockData }],
-        );
+        console.log('stockData', stockData);
+
+        if (tableData.find(stock => stock.id === stockData.id)) {
+          const clonedTableData = [...tableData];
+          const indexStock = clonedTableData.findIndex(
+            stock => stock.id === stockData.id,
+          );
+          clonedTableData[indexStock] = stockData;
+          setTableData(clonedTableData);
+        } else {
+          setTableData(prevState => [...prevState, { ...stockData }]);
+        }
       }
     },
-    [],
+    [tableData],
   );
 
   const processMessages = useCallback(
     (event: { data: string }): void => {
       // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
-      const protoBuf = require('./pricingData.proto');
+      const protoBuf = require('./PricingData.proto');
       load(protoBuf, (err, root) => {
         if (err) throw err;
         const pricingMessage = root?.lookupTypeOrEnum('PricingData');
         const stockData = pricingMessage?.decode(
-          base64ToArrayBuffer(
-            event.data,
-            // 'CgRBTVpOFUgN3EQY4KP2/99bKgNOTVMwCDgBRSBhnjtInq5+ZQBArj3YAQQ=',
-          ),
+          base64ToArrayBuffer(event.data),
         );
         if (stockData) {
           const parsedStock = stockData?.toJSON();
@@ -70,8 +70,6 @@ export const Dashboard: React.FC<IDashboard> = ({ isFeedKilled }) => {
         subscribe: STOCKS,
       };
       sendMessage(JSON.stringify(subscribeMessage));
-
-      // processMessages({ data: 'asd' });
     };
 
     if (isFeedKilled) {

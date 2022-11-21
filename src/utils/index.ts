@@ -10,11 +10,13 @@ const base64ToArrayBuffer = (base64: string): Uint8Array => {
 
 const formatNumber = (
   maximumFractionDigits: number,
-  style: string,
   value?: number,
-  currency = 'USD',
+  currency?: string,
+  style?: string,
 ): string => {
   const options = { maximumFractionDigits, style, currency };
+  if (style) Object.assign(options, { style });
+  if (currency) Object.assign(options, { currency });
   return value ? Intl.NumberFormat('us', options).format(value) : '';
 };
 
