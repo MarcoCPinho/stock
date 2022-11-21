@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Dashboard } from './components/Dashboard';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
+import { AppProvider } from './context/AppContext';
 import GlobalStyle from './styles/global';
 
 export const App: React.FC = () => {
@@ -56,21 +57,16 @@ export const App: React.FC = () => {
   }, []);
 
   return (
-    <div>
-      {isPageVisible && (
-        <>
-          <GlobalStyle />
+    <>
+      <GlobalStyle />
 
-          <Header />
+      <Header />
 
-          <Dashboard isFeedKilled={!isPageVisible || isFeedKilled} />
+      <AppProvider>
+        <Dashboard isFeedKilled={!isPageVisible || isFeedKilled} />
+      </AppProvider>
 
-          <Footer
-            isFeedKilled={isFeedKilled}
-            setIsFeedKilled={setIsFeedKilled}
-          />
-        </>
-      )}
-    </div>
+      <Footer isFeedKilled={isFeedKilled} setIsFeedKilled={setIsFeedKilled} />
+    </>
   );
 };

@@ -2,13 +2,14 @@
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { load } from 'protobufjs';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import useWebSocket from 'react-use-websocket';
 import { STOCKS } from '../../constants';
+import { useAppContext, useAppDispatch } from '../../context/AppContext';
 import { IPricingData } from '../../interfaces';
 import { base64ToArrayBuffer } from '../../utils';
 import { Container } from './styles';
-import { formatObjectSearch } from './utils';
+import { formatObjectSearch } from './utils/utils';
 
 export interface IDashboard {
   isFeedKilled: boolean;
@@ -17,7 +18,8 @@ export interface IDashboard {
 const WSS_FEED_URL = 'wss://streamer.finance.yahoo.com/';
 
 export const Dashboard: React.FC<IDashboard> = ({ isFeedKilled }) => {
-  const [tableData, setTableData] = useState<IPricingData[]>([]);
+  const tableData = useAppContext();
+  const dispatch = useAppDispatch();
   const { sendMessage, getWebSocket } = useWebSocket(WSS_FEED_URL, {
     onOpen: () => console.log('WebSocket connection opened.'),
     onClose: () => console.log('WebSocket connection closed.'),
@@ -29,26 +31,19 @@ export const Dashboard: React.FC<IDashboard> = ({ isFeedKilled }) => {
     (stockData: IPricingData): void => {
       if (stockData) {
         console.log('stockData', stockData);
-
-        if (tableData.find(stock => stock.id === stockData.id)) {
-          const clonedTableData = [...tableData];
-          const indexStock = clonedTableData.findIndex(
-            stock => stock.id === stockData.id,
-          );
-          clonedTableData[indexStock] = stockData;
-          setTableData(clonedTableData);
-        } else {
-          setTableData(prevState => [...prevState, { ...stockData }]);
-        }
+        dispatch({
+          type: 'changed',
+          stock: stockData,
+        });
       }
     },
-    [tableData],
+    [dispatch],
   );
 
   const processMessages = useCallback(
     (event: { data: string }): void => {
       // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
-      const protoBuf = require('./PricingData.proto');
+      const protoBuf = require('./utils/PricingData.proto');
       load(protoBuf, (err, root) => {
         if (err) throw err;
         const pricingMessage = root?.lookupTypeOrEnum('PricingData');
